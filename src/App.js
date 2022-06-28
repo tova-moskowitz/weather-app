@@ -8,11 +8,36 @@ function App() {
     setLocation(event.target.value);
   };
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (!event.target.location.value) {
+      return;
+    }
+
+    const APIKey = "7841aaead8245e0fde0256620686a3e1";
+    const zip = event.target.location.value;
+    const countryCode = "US";
+    const url = `https://api.openweathermap.org/data/2.5/weather?zip=${zip},${countryCode}&units=imperial&appid=${APIKey}`;
+    let lat = 0;
+    let lon = 0;
+    let currentTemp = 0;
+
+    fetch(url)
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        currentTemp = Math.round(data.main.temp);
+        lat = data.coord.lat;
+        lon = data.coord.lon;
+      });
+  };
+
   return (
     <>
       <div className="weatherForm">
         <h1>How's the Weather?</h1>
-        <form className="getLocation">
+        <form onSubmit={handleSubmit} className="getLocation">
           <input
             value={location}
             onChange={onChange}
