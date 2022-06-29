@@ -1,9 +1,31 @@
 @import url("https://fonts.googleapis.com/css?family=Didact+Gothic");
 
+body {
+  /* background: linear-gradient(#87ceeb, #9198e5); */
+  /* background-image: url("../public/wil-stewart-T26KCgCPsCI-unsplash.jpg"); */
+  background-image: url("../public/paul-berthelon-bravo-BGXhuJIbx78-unsplash.jpg");
+  /* width: 100%;
+  height: 100%; */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+}
+
 .App,
-.weatherForm {
+.weatherResults {
+  width: 100%;
+  height: px;
   text-align: center;
   font-family: "Didact Gothic";
+}
+
+.selectCountry {
+  height: 50px;
+  width: fit-content;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 2px black solid;
+  margin-top: 2px;
 }
 
 .location {
@@ -19,7 +41,24 @@
 .submitLocation {
   display: block;
   margin: 2px auto;
-  width: 20%;
+  width: fit-content;
   height: 50px;
   border-radius: 8px;
+  font-family: "Didact Gothic";
+  font-size: 15px;
+}
+
+.locationName {
+  font-family: "Didact Gothic";
+  font-size: 50px;
+}
+
+.currentTemperature {
+  background: #fff;
+  font-size: 20px;
+  border: 1px black solid;
+  width: 30%;
+  line-height: 2;
+  margin-left: 40px;
+  padding: 40px;
 }
