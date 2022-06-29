@@ -1,5 +1,8 @@
 const countries = [
-  <option>country</option>,
+  <option value="">-- Select a Country --</option>,
+  <option value="US">United States</option>,
+  <option value="GB">United Kingdom</option>,
+  <option value="none">--------------</option>,
   <option value="AF">Afghanistan</option>,
   <option value="AX">Aland Islands</option>,
   <option value="AL">Albania</option>,

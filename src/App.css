@@ -1,22 +1,26 @@
 @import url("https://fonts.googleapis.com/css?family=Didact+Gothic");
 
-body {
+html {
   /* background: linear-gradient(#87ceeb, #9198e5); */
   /* background-image: url("../public/wil-stewart-T26KCgCPsCI-unsplash.jpg"); */
-  background-image: url("../public/paul-berthelon-bravo-BGXhuJIbx78-unsplash.jpg");
-  /* width: 100%;
-  height: 100%; */
+  background-image: url("../public/wai-hsuen-weixian-chan-DnmMLipPktY-unsplash.jpg");
+  /* width: 100%; */
+  height: 100%;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: 50% 50%;
 }
 
 .App,
-.weatherResults {
+.weatherForm {
   width: 100%;
   height: px;
   text-align: center;
   font-family: "Didact Gothic";
+}
+
+.weatherForm h1 {
+  margin-bottom: 10px;
 }
 
 .selectCountry {
@@ -26,22 +30,23 @@ body {
   border-radius: 8px;
   border: 2px black solid;
   margin-top: 2px;
+  text-align: center;
 }
 
 .location {
   display: block;
   height: 50px;
   width: 50%;
-  margin: 20px auto 0 auto;
+  margin: 10px auto 0 auto;
   border-radius: 8px;
   font-size: 25px;
   text-align: center;
 }
 
 .submitLocation {
+  padding: 0 30px;
   display: block;
   margin: 2px auto;
-  width: fit-content;
   height: 50px;
   border-radius: 8px;
   font-family: "Didact Gothic";
@@ -49,16 +54,34 @@ body {
 }
 
 .locationName {
+  text-align: center;
   font-family: "Didact Gothic";
-  font-size: 50px;
+  font-size: 30px;
+  margin: auto;
 }
 
-.currentTemperature {
-  background: #fff;
+.weatherDetails {
+  display: flex;
+}
+
+.currentTemperature,
+.aqi {
+  border-radius: 8px;
+  background: #efefef;
   font-size: 20px;
-  border: 1px black solid;
-  width: 30%;
+  border: 1px #000 solid;
+  width: 20%;
   line-height: 2;
   margin-left: 40px;
   padding: 40px;
+}
+
+.formGroup {
+  display: inline;
+}
+
+input,
+select {
+  display: inline-block;
+  vertical-align: middle;
 }
