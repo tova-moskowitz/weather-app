@@ -1,11 +1,13 @@
 import { useState } from "react";
 import "./App.css";
 import countryCodes from "./countryCodes.js";
+import stateCodes from "./stateCodes.js";
 
 function App() {
   const [location, setLocation] = useState("");
   const [locationName, setLocationName] = useState("");
   const [countryCode, setCountryCode] = useState();
+  const [stateCode, setStateCode] = useState();
   const [stateName, setStateName] = useState();
   const [currentTemp, setCurrentTemp] = useState();
   const [lat, setLat] = useState(null);
@@ -16,6 +18,11 @@ function App() {
   const [weather, setWeather] = useState(null);
   const [description, setDescription] = useState(null);
   const [pollutionAQI, setPollutionAQI] = useState(null);
+  // check if a zip code was entered. If so, use the 'zip' param.
+  // otherwise use 'q'
+  const regex = /^\d{5}(?:[-\s]\d{4})?$/;
+  const queryParam = location.match(regex) ? "zip" : "city";
+  let currentWeather = "";
 
   const pollutionMapping = {
     1: "Good",
@@ -29,6 +36,10 @@ function App() {
     setLocation(event.target.value);
   };
 
+  const onStateChange = (event) => {
+    setStateCode(event.target.value);
+  };
+
   const onCountryChange = (event) => {
     setCountryCode(event.target.value);
   };
@@ -40,67 +51,79 @@ function App() {
     }
 
     const APIKey = "7841aaead8245e0fde0256620686a3e1";
-    // check if a zip code was entered. If so, use the 'zip' param.
-    // otherwise use 'q'
 
-    const regex = /^\d{5}(?:[-\s]\d{4})?$/;
-    const queryParam = location.match(regex) ? "zip?zip" : "direct?q";
-    const geoCoding = `http://api.openweathermap.org/geo/1.0/${queryParam}=${location},${countryCode}&appid=${APIKey}`;
-
-    fetch(geoCoding)
+    if (queryParam === "zip") {
+      currentWeather = `https://api.openweathermap.org/data/2.5/weather?q=${location},${countryCode}&units=imperial&appid=${APIKey}`;
+    } else {
+      currentWeather = `https://api.openweathermap.org/data/2.5/weather?q=${location},${stateCode},${countryCode}&units=imperial&appid=${APIKey}`;
+    }
+    fetch(currentWeather)
       .then((response) => {
         return response.json();
       })
       .then((data) => {
-        setLat(data[0].lat);
-        setLon(data[0].lon);
-        setStateName(data.name);
-        setStateName(data[0].state);
-        console.log(data[0].name + ", " + data[0].state);
-        const currentWeather = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${APIKey}`;
-
-        fetch(currentWeather)
-          .then((response) => {
-            return response.json();
-          })
+        setLat(data.coord.lat);
+        setLon(data.coord.lon);
+        setLocationName(data.name);
+        setCurrentTemp(Math.round(data.main.temp));
+        setHumidity(data.main.humidity);
+        setWind(Math.round(data.wind.speed));
+        setFeelsLike(Math.round(data.main.feels_like));
+        setWeather(data.weather[0].main);
+        setDescription(data.weather[0].description);
+        fetch(
+          `http://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${APIKey}`
+        )
+          .then((res) => res.json())
           .then((data) => {
-            setLocationName(data.name);
-            setCurrentTemp(Math.round(data.main.temp));
-            setHumidity(data.main.humidity);
-            setWind(Math.round(data.wind.speed));
-            setFeelsLike(Math.round(data.main.feels_like));
-            setWeather(data.weather[0].main);
-            setDescription(data.weather[0].description);
-            fetch(
-              `http://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${APIKey}`
-            )
-              .then((res) => res.json())
-              .then((data) => {
-                console.log(data.list[0].main.aqi);
-                setPollutionAQI(data.list[0].main.aqi);
-              });
-            fetch(
-              `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${APIKey}`
-            )
-              .then((res) => res.json())
-              .then((data) => {
-                // console.log(data);
-              });
+            console.log(data.list[0].main.aqi);
+            setPollutionAQI(data.list[0].main.aqi);
           });
+        fetch(
+          `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${APIKey}`
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            // console.log(data);
+          });
+        // });
       });
   };
 
-  const currentWeather = () => {
+  const showStateSelect = () => {
+    if (queryParam !== "zip" && countryCode === "US") {
+      return (
+        <select
+          onChange={onStateChange}
+          name="selectState"
+          className="selectState"
+        >
+          {stateCodes.map((state) => {
+            return (
+              <option value={state.props.value}>{state.props.children}</option>
+            );
+          })}
+        </select>
+      );
+    }
+  };
+
+  const displayCurrentWeather = () => {
     if (currentTemp) {
       return (
-        <div className="currentTemperature">
-          <div>{weather}</div>
-          <div>{description}</div>
-          <div>Current Temperature: {currentTemp}&deg;</div>
-          <div>Humidity: {humidity}%</div>
-          <div>Winds: {wind} mph</div>
-          <div>RealFeel Temperature: {feelsLike}&deg;</div>
-        </div>
+        <>
+          <div className="currentTemperature">
+            <div>{weather}</div>
+            <div>{description}</div>
+            <div>Current Temperature: {currentTemp}&deg;</div>
+            <div>Humidity: {humidity}%</div>
+            <div>Winds: {wind} mph</div>
+            <div>RealFeel Temperature: {feelsLike}&deg;</div>
+          </div>
+          <div className="aqi">
+            Air Quality Index: {pollutionMapping[pollutionAQI]}
+          </div>
+        </>
       );
     }
   };
@@ -114,11 +137,11 @@ function App() {
   return (
     <>
       <div className="weatherForm">
-        <h1>How's the Weather?</h1>
-        <form onSubmit={handleSubmit} className="getLocation">
-          <div className="formGroup">
+        <h1>how's the weather out there?</h1>
+        <div className="formGroup">
+          <form onSubmit={handleSubmit} className="getLocation">
             <label>
-              Enter ZIP code or city name, state
+              Enter ZIP code or 'city name and state', and country name
               <input
                 value={location}
                 onChange={onChange}
@@ -127,6 +150,7 @@ function App() {
                 name="location"
               />
             </label>
+            {showStateSelect()}
             <select
               onChange={onCountryChange}
               name="selectCountry"
@@ -145,18 +169,15 @@ function App() {
               className="submitLocation"
               value="Get Results"
             />
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
       <div className="locationName">
-        {locationName}, {stateName}
+        {locationName}, {stateName}, {countryCode}
       </div>
       <div className="weatherDetails">
-        {currentWeather()}
-        <div className="aqi">
-          Air Quality Index: {pollutionMapping[pollutionAQI]}
-        </div>
-        {fiveDayForecast}
+        {displayCurrentWeather()}
+        {fiveDayForecast()}
       </div>
     </>
   );
@@ -179,4 +200,5 @@ export default App;
 // get country code from entry
 // (night sky after sundown- background and font color)
 // error handling
-// I messed up the whole finding the right location based on zip/city thing
+// Change background image for cloudy/rain/snow/clear/nighttime
+// show state dropdown when it's not a zip

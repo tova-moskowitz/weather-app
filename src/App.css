@@ -23,7 +23,8 @@ html {
   margin-bottom: 10px;
 }
 
-.selectCountry {
+.selectCountry,
+.selectState {
   height: 50px;
   width: fit-content;
   font-size: 15px;
