@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./App.css";
 import countryCodes from "./countryCodes.js";
 import stateCodes from "./stateCodes.js";
+const dayjs = require("dayjs");
 
 function App() {
   const APIKey = "7841aaead8245e0fde0256620686a3e1";
@@ -93,7 +94,28 @@ function App() {
         // fetch 5-day forecast
         fetch(
           `http://api.openweathermap.org/data/2.5/forecast?lat=${data.coord.lat}&lon=${data.coord.lon}&units=imperial&appid=${APIKey}`
-        ).then((res) => res.json());
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            const highs = [];
+            const lows = [];
+            let highest = 0;
+            let lowest = 0;
+
+            data.list.forEach((day) => {
+              // this is just for one hard-coded day, must next...
+              // check if days are the same date instead of hard-coding date
+              if (day.dt_txt.split(" ")[0] === "2022-07-04") {
+                highs.push(day.main.temp_max);
+                lows.push(day.main.temp_min);
+              }
+            });
+            highest = Math.round(highs.sort((a, b) => a - b)[0]);
+            lowest = Math.round(lows.sort((a, b) => b - a)[0]);
+
+            // console.log(highest);
+            // console.log(lowest);
+          });
 
         // reverse geolocation to get full state and full country names
         fetch(
@@ -166,9 +188,7 @@ function App() {
   };
 
   const fiveDayForecast = () => {
-    if (currentTemp) {
-      return <div className="aqi">{pollutionMapping.pollutionAQI}</div>;
-    }
+    return;
   };
 
   return (
@@ -234,9 +254,10 @@ export default App;
 // use either zip or q in api call ----
 // get country code from entry ----
 // (night sky after sundown- background and font color)
-// error handling
+// error handling----
 // Change background image for cloudy/rain/snow/clear/nighttime
 // show state dropdown when it's not a zip ----
-// the commas
+// the commas----
 // styling
-// some cities return the wrong results. for example, flushing and forest hills
+// some cities return the wrong results. for example, flushing and forest hills and blank location
+// still shows results even when you have the wrong city/country combination
