@@ -37,6 +37,7 @@ function App() {
   const getDaysOfWeek = (unixTimestamp) => {
     const dayOfWeek = new Date(dayjs.unix(unixTimestamp));
     const options = { weekday: "long" };
+    // console.log(Intl.DateTimeFormat("en-US", options).format(dayOfWeek));
     return new Intl.DateTimeFormat("en-US", options).format(dayOfWeek);
   };
 
@@ -91,7 +92,7 @@ function App() {
     fetch(currentWeather)
       .then((response) => {
         if (response.status !== 200) {
-          //BETTER ERROR MSGS, to check for more cases
+          //BETTER ERROR MSGS, to check for more cases, like when no such zip
           setErrorMsg(
             <div className="errorMsg">
               Please enter a valid US ZIP code or city, state country code
@@ -134,15 +135,16 @@ function App() {
         )
           .then((res) => res.json())
           .then((forecastData) => {
-            //TODO don't include today's date in the 5-day forecast
             let dates = [];
             let uniqueDates = [];
-            let highest = [];
-            let lowest = [];
+            let highest = {};
+            let lowest = {};
 
             dates = forecastData.list.map((day) => {
-              if (day.dt_txt.split(" ")[0] !== todayDate) {
-                return day.dt_txt.split(" ")[0];
+              // TODO don't include current day's weather in 5-day forecast--already done just need to test in morning
+              const formattedDate = day.dt_txt.split(" ")[0];
+              if (formattedDate !== todayDate) {
+                return formattedDate;
               }
             });
             uniqueDates = [...new Set(dates)];
@@ -154,18 +156,21 @@ function App() {
               });
               return w;
             });
+
             weatherObjs.forEach((w) => {
               w.highs = w.timeChunks.map((timeChunk) => {
-                // w.dayOfWeekName = getDaysOfWeek(timeChunk.dt);
+                w.dayOfWeek = getDaysOfWeek(timeChunk.dt);
                 return Math.round(timeChunk.main.temp_max);
               });
-              highest.push(w.highs.sort((a, b) => b - a)[0]);
+              // highest.push(w.highs.sort((a, b) => b - a)[0]);
+              highest[w.dayOfWeek] = w.highs.sort((a, b) => b - a)[0];
 
               w.lows = w.timeChunks.map((timeChunk) => {
                 return Math.round(timeChunk.main.temp_min);
               });
-              lowest.push(w.lows.sort((a, b) => a - b)[0]);
+              lowest[w.dayOfWeek] = w.lows.sort((a, b) => a - b)[0];
             });
+            // setHighs(highest);
             setHighs(highest);
             setLows(lowest);
           });
@@ -244,21 +249,31 @@ function App() {
   };
 
   const highTemps = () => {
-    return highs.map((high) => {
-      //todo dropdown for F vs C
-      return (
+    let output = [];
+
+    for (let day in highs) {
+      output.push(
         <>
-          <div className="daysOfTheWeek">Monday</div>
-          <div className="dailyHigh">{high}&deg;F</div>
+          <div className="dayOfTheWeek">{day}</div>
+          <div className="dailyHigh">{highs[day]}&deg;F</div>
         </>
       );
-    });
+    }
+    return output;
   };
 
   const lowTemps = () => {
-    return lows.map((low) => {
-      return <div className="dailyLow">{low}&deg;F</div>;
-    });
+    let output = [];
+
+    for (let day in lows) {
+      output.push(
+        <>
+          <div className="dayOfTheWeek">{day}</div>
+          <div className="dailyLow">{lows[day]}&deg;F</div>
+        </>
+      );
+    }
+    return output;
   };
 
   return (
@@ -274,7 +289,7 @@ function App() {
                 type="text"
                 className="location"
                 name="location"
-                placeholder="Enter city or US zip code"
+                placeholder="Enter a city or US zip code"
               />
             </label>
             {showStateSelect()}
