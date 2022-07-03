@@ -2,11 +2,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Arima:wght@100&family=Indie+Flower&display=swap");
 
 html {
-  background: linear-gradient(#87ceeb, #9198e5);
-  /* background-image: url("../public/wil-stewart-T26KCgCPsCI-unsplash.jpg"); */
   width: 100%;
-
-  /* background-image: url("../public/wai-hsuen-weixian-chan-DnmMLipPktY-unsplash.jpg"); */
+  background-image: url("../public/wai-hsuen-weixian-chan-DnmMLipPktY-unsplash.jpg");
   height: 100%;
   background-size: cover;
   background-repeat: no-repeat;
@@ -25,14 +22,10 @@ html {
   font-size: 1.5rem;
 }
 
-.defaultSelection {
-  color: purple;
-}
-
 ::placeholder {
-  /* font-style: italic; */
+  font-style: italic;
   font-size: 0.75em;
-  color: mintcream;
+  color: gray;
   padding: 5px;
 }
 
@@ -89,14 +82,10 @@ html {
 
 .currentTemperature {
   width: fit-content;
-  background: #fff;
   font-size: 14px;
-  border: 2px #000 solid;
   line-height: 2;
   padding: 10px;
-}
-
-.formGroup {
+  border-radius: 20px;
 }
 
 label {
@@ -151,7 +140,8 @@ select {
   text-align: center;
   height: 100px;
 }
-.daysOfTheWeek {
-}
-.lows {
+.dayOfTheWeek {
+  font-size: 15px;
+  position: relative;
+  left: 94px;
 }

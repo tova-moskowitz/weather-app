@@ -37,7 +37,6 @@ function App() {
   const getDaysOfWeek = (unixTimestamp) => {
     const dayOfWeek = new Date(dayjs.unix(unixTimestamp));
     const options = { weekday: "long" };
-    // console.log(Intl.DateTimeFormat("en-US", options).format(dayOfWeek));
     return new Intl.DateTimeFormat("en-US", options).format(dayOfWeek);
   };
 
@@ -82,17 +81,12 @@ function App() {
     } else {
       currentWeather = `${baseUrl}q=${location},${state}${countryCode}${suffix}`;
     }
-    //todo
-    //change order of API calls:
-    //call geoLocation to get lat/lon of entered city
-    // THE STATE THEY ENTER AND THE STATE THAT COMES BACK HAVE TO MATCH
-    // SAME FOR COUNTRY
 
     // fetch current weather
     fetch(currentWeather)
       .then((response) => {
         if (response.status !== 200) {
-          //BETTER ERROR MSGS, to check for more cases, like when no such zip
+          //TODO BETTER ERROR MSGS, to check for more cases, like when no such zip
           setErrorMsg(
             <div className="errorMsg">
               Please enter a valid US ZIP code or city, state country code
@@ -141,11 +135,11 @@ function App() {
             let lowest = {};
 
             dates = forecastData.list.map((day) => {
-              // TODO don't include current day's weather in 5-day forecast--already done just need to test in morning
+              // TODO don't include current day's weather in 5-day forecast
               const formattedDate = day.dt_txt.split(" ")[0];
-              if (formattedDate !== todayDate) {
-                return formattedDate;
-              }
+              // if (formattedDate !== todayDate) {
+              return formattedDate;
+              // }
             });
             uniqueDates = [...new Set(dates)];
             const weatherObjs = uniqueDates.map((date) => {
@@ -162,7 +156,6 @@ function App() {
                 w.dayOfWeek = getDaysOfWeek(timeChunk.dt);
                 return Math.round(timeChunk.main.temp_max);
               });
-              // highest.push(w.highs.sort((a, b) => b - a)[0]);
               highest[w.dayOfWeek] = w.highs.sort((a, b) => b - a)[0];
 
               w.lows = w.timeChunks.map((timeChunk) => {
@@ -170,7 +163,6 @@ function App() {
               });
               lowest[w.dayOfWeek] = w.lows.sort((a, b) => a - b)[0];
             });
-            // setHighs(highest);
             setHighs(highest);
             setLows(lowest);
           });
@@ -344,6 +336,10 @@ export default App;
 // Change background image for cloudy/rain/snow/clear/nighttime
 // show state dropdown when it's not a zip ----
 // the commas----
-// styling
+// styling:
+//    RESPONSIVE!!
+//    Icons/weather symbols
+//    center days of week above temperatures
 // some cities return the wrong results. for example, flushing and forest hills and blank location
 // still shows results even when you have the wrong city/country combination
+// shows today + 4 days ahead instead of starting tomorrow
