@@ -7,7 +7,7 @@ const dayjs = require("dayjs");
 
 function App() {
   const APIKey = "7841aaead8245e0fde0256620686a3e1";
-  const [location, setLocation] = useState("");
+  const [input, setInput] = useState("");
   const [cityName, setCityName] = useState("");
   const [countryCode, setCountryCode] = useState();
   const [countryName, setCountryName] = useState();
@@ -24,14 +24,16 @@ function App() {
   const [weather, setWeather] = useState(null);
   const [description, setDescription] = useState(null);
   const [pollutionAQI, setPollutionAQI] = useState(null);
-  const [highs, setHighs] = useState([]);
-  const [lows, setLows] = useState([]);
+  const [dailyHighs, setDailyHighs] = useState([]);
+  const [dailyLows, setDailyLows] = useState([]);
+  const [dailyWeather, setDailyWeather] = useState([]);
+  const [dailyIcons, setDailyIcons] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
   // check if a US zip code was entered
   const regex = /^\d{5}(?:[-\s]\d{4})?$/;
-  const queryParam = location.match(regex) ? "zip" : "city";
+  const queryParam = input.match(regex) ? "zip" : "city";
   let currentWeather = "";
 
   const getDaysOfWeek = (unixTimestamp) => {
@@ -48,8 +50,8 @@ function App() {
     5: "Very Poor",
   };
 
-  const onLocationChange = (e) => {
-    setLocation(e.target.value);
+  const onInputChange = (e) => {
+    setInput(e.target.value);
   };
 
   const onStateChange = (e) => {
@@ -77,9 +79,9 @@ function App() {
     const state = stateCode ? stateCode + "," : "";
 
     if (queryParam === "zip") {
-      currentWeather = `${baseUrl}zip=${location},${countryCode}${suffix}`;
+      currentWeather = `${baseUrl}zip=${input},${countryCode}${suffix}`;
     } else {
-      currentWeather = `${baseUrl}q=${location},${state}${countryCode}${suffix}`;
+      currentWeather = `${baseUrl}q=${input},${state}${countryCode}${suffix}`;
     }
 
     // fetch current weather
@@ -98,7 +100,7 @@ function App() {
         } else {
           setErrorMsg("");
         }
-        //const json = response.json(); instead of data
+        //TODO const json = response.json(); instead of data
         return response.json();
       })
 
@@ -129,18 +131,14 @@ function App() {
         )
           .then((res) => res.json())
           .then((forecastData) => {
-            let dates = [];
             let uniqueDates = [];
             let highest = {};
             let lowest = {};
 
-            dates = forecastData.list.map((day) => {
-              // TODO don't include current day's weather in 5-day forecast
-              const formattedDate = day.dt_txt.split(" ")[0];
-              // if (formattedDate !== todayDate) {
-              return formattedDate;
-              // }
-            });
+            let dates = forecastData.list.filter(
+              (day) => day.dt_txt.split(" ")[0] !== todayDate
+            );
+            dates = dates.map((date) => date.dt_txt.split(" ")[0]);
             uniqueDates = [...new Set(dates)];
             const weatherObjs = uniqueDates.map((date) => {
               let w = new Weather();
@@ -157,14 +155,27 @@ function App() {
                 return Math.round(timeChunk.main.temp_max);
               });
               highest[w.dayOfWeek] = w.highs.sort((a, b) => b - a)[0];
+              setDailyHighs(highest);
 
               w.lows = w.timeChunks.map((timeChunk) => {
                 return Math.round(timeChunk.main.temp_min);
               });
               lowest[w.dayOfWeek] = w.lows.sort((a, b) => a - b)[0];
+              setDailyLows(lowest);
+
+              w.weather = w.timeChunks.map((timeChunk) => {
+                return timeChunk.weather[0].main;
+              });
+
+              w.icons = w.timeChunks.map((timeChunk) => {
+                return timeChunk.weather[0].icon;
+              });
             });
-            setHighs(highest);
-            setLows(lowest);
+
+            weatherObjs.map((obj) => {
+              setDailyIcons(obj.icons);
+              setDailyWeather(obj.weather);
+            });
           });
 
         // reverse geolocation to get full state and full country names
@@ -243,11 +254,10 @@ function App() {
   const highTemps = () => {
     let output = [];
 
-    for (let day in highs) {
+    for (let day in dailyHighs) {
       output.push(
         <>
-          <div className="dayOfTheWeek">{day}</div>
-          <div className="dailyHigh">{highs[day]}&deg;F</div>
+          <div className="dailyHigh">{dailyHighs[day]}&deg;F</div>
         </>
       );
     }
@@ -256,18 +266,27 @@ function App() {
 
   const lowTemps = () => {
     let output = [];
-
-    for (let day in lows) {
+    for (let day in dailyLows) {
       output.push(
         <>
-          <div className="dayOfTheWeek">{day}</div>
-          <div className="dailyLow">{lows[day]}&deg;F</div>
+          <div className="dailyLow">{dailyLows[day]}&deg;F</div>
         </>
       );
     }
     return output;
   };
 
+  const daysOfTheWeek = () => {
+    let output = [];
+    for (let day in dailyHighs) {
+      output.push(
+        <>
+          <div className="dayOfTheWeek">{day}</div>
+        </>
+      );
+    }
+    return output;
+  };
   return (
     <>
       <div className="weatherForm">
@@ -276,8 +295,8 @@ function App() {
             <label>
               <span className="beforeInput">how's the weather in </span>
               <input
-                value={location}
-                onChange={onLocationChange}
+                value={input}
+                onChange={onInputChange}
                 type="text"
                 className="location"
                 name="location"
@@ -310,6 +329,7 @@ function App() {
       <div className="weatherDetails">
         {displayCurrentWeather()}
         <div className="fiveDayForecast">
+          <div className="daysOfTheWeek">{daysOfTheWeek()}</div>
           <div className="highs">{highTemps()}</div>
           <div className="lows">{lowTemps()}</div>
         </div>
@@ -332,14 +352,18 @@ export default App;
 // use either zip or q in api call ----
 // get country code from entry ----
 // (night sky after sundown- background and font color)
-// error handling----
+// error handling ----
 // Change background image for cloudy/rain/snow/clear/nighttime
 // show state dropdown when it's not a zip ----
-// the commas----
+// the commas ----
 // styling:
 //    RESPONSIVE!!
 //    Icons/weather symbols
-//    center days of week above temperatures
+//    center days of week above temperatures ----
+//    fix where submit button is placed
+//    center the 5 days forecast in the middle of the page ----
+//    change background image for nighttime or different weather
 // some cities return the wrong results. for example, flushing and forest hills and blank location
 // still shows results even when you have the wrong city/country combination
-// shows today + 4 days ahead instead of starting tomorrow
+// shows today + 4 days ahead instead of starting tomorrow ----
+// create error messages for failed API calls that come after successful ones (right now it just leaves the previous result on the page with no error message)
