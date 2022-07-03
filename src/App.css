@@ -78,14 +78,16 @@ html {
 .weatherDetails {
   display: flex;
   flex-direction: column;
+  text-align: center;
 }
 
 .currentTemperature {
-  width: fit-content;
+  width: 100%;
   font-size: 14px;
   line-height: 2;
   padding: 10px;
   border-radius: 20px;
+  margin-bottom: 20px;
 }
 
 label {
@@ -121,18 +123,20 @@ select {
 
 .fiveDayForecast {
   display: flex;
-  width: 25%;
+  width: 45%;
   flex-direction: column;
 }
 
 .highs,
-.lows {
+.lows,
+.daysOfTheWeek {
   display: flex;
   flex-direction: row;
 }
 
 .dailyHigh,
-.dailyLow {
+.dailyLow,
+.dayOfTheWeek {
   flex: 0 0 45%;
   font-size: 30px;
   font-weight: bold;
@@ -140,8 +144,8 @@ select {
   text-align: center;
   height: 100px;
 }
+
 .dayOfTheWeek {
-  font-size: 15px;
-  position: relative;
-  left: 94px;
+  font-size: 14px;
+  height: 35px;
 }
