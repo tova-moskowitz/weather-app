@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Weather from "./weather.js";
 import "./App.css";
 import countryCodes from "./countryCodes.js";
 import stateCodes from "./stateCodes.js";
@@ -13,6 +14,8 @@ function App() {
   const [stateCode, setStateCode] = useState();
   const [stateName, setStateName] = useState();
   const [currentTemp, setCurrentTemp] = useState();
+  const [todayDate, setTodayDate] = useState(dayjs().format("YYYY-MM-DD"));
+  const [dayName, setDayName] = useState();
   // const [lat, setLat] = useState(null);
   // const [lon, setLon] = useState(null);
   const [humidity, setHumidity] = useState(null);
@@ -21,12 +24,21 @@ function App() {
   const [weather, setWeather] = useState(null);
   const [description, setDescription] = useState(null);
   const [pollutionAQI, setPollutionAQI] = useState(null);
+  const [highs, setHighs] = useState([]);
+  const [lows, setLows] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
-
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("");
   // check if a US zip code was entered
   const regex = /^\d{5}(?:[-\s]\d{4})?$/;
   const queryParam = location.match(regex) ? "zip" : "city";
   let currentWeather = "";
+
+  const getDaysOfWeek = (unixTimestamp) => {
+    const dayOfWeek = new Date(dayjs.unix(unixTimestamp));
+    const options = { weekday: "long" };
+    return new Intl.DateTimeFormat("en-US", options).format(dayOfWeek);
+  };
 
   const pollutionMapping = {
     1: "Good",
@@ -36,41 +48,65 @@ function App() {
     5: "Very Poor",
   };
 
-  const onChange = (event) => {
-    setLocation(event.target.value);
+  const onLocationChange = (e) => {
+    setLocation(e.target.value);
   };
 
-  const onStateChange = (event) => {
-    setStateCode(event.target.value);
+  const onStateChange = (e) => {
+    // if a state was selected and then country other than US is selected, reset dropdown to empty so that it doesn't pass the prev stateName value
+    let stateCode = countryCode === "US" ? e.target.value : "";
+    setStateCode(stateCode);
+    //todo
+    // // setSelectedState(e.target.selectedOptions[0].innerHTML);
+    // setSelectedState(e.target.value);
   };
 
-  const onCountryChange = (event) => {
-    setCountryCode(event.target.value);
+  const onCountryChange = (e) => {
+    setCountryCode(e.target.value);
+    setSelectedCountry(e.target.value);
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  //todo
+  // const fetchCurrentWeather = () => {};
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const baseUrl = "https://api.openweathermap.org/data/2.5/weather?";
+    const suffix = "&units=imperial&appid=7841aaead8245e0fde0256620686a3e1";
+    const state = stateCode ? stateCode + "," : "";
 
     if (queryParam === "zip") {
-      currentWeather = `https://api.openweathermap.org/data/2.5/weather?zip=${location},${countryCode}&units=imperial&appid=${APIKey}`;
+      currentWeather = `${baseUrl}zip=${location},${countryCode}${suffix}`;
     } else {
-      currentWeather = `https://api.openweathermap.org/data/2.5/weather?q=${location},${stateCode},${countryCode}&units=imperial&appid=${APIKey}`;
+      currentWeather = `${baseUrl}q=${location},${state}${countryCode}${suffix}`;
     }
+    //todo
+    //change order of API calls:
+    //call geoLocation to get lat/lon of entered city
+    // THE STATE THEY ENTER AND THE STATE THAT COMES BACK HAVE TO MATCH
+    // SAME FOR COUNTRY
+
     // fetch current weather
     fetch(currentWeather)
       .then((response) => {
         if (response.status !== 200) {
+          //BETTER ERROR MSGS, to check for more cases
           setErrorMsg(
             <div className="errorMsg">
               Please enter a valid US ZIP code or city, state country code
               combination
             </div>
           );
+          // todo doesn't work yet bec it still goes to the next .then()
+          return;
         } else {
           setErrorMsg("");
         }
+        //const json = response.json(); instead of data
         return response.json();
       })
+
       .then((data) => {
         // setLat(data.coord.lat);
         // setLon(data.coord.lon);
@@ -82,13 +118,14 @@ function App() {
         setWeather(data.weather[0].main);
         setDescription(data.weather[0].description);
 
-        // fetch air pollution
+        // fetchAirPollution();
         fetch(
+          // todo split into variables so not repeating same baseUrl
           `http://api.openweathermap.org/data/2.5/air_pollution?lat=${data.coord.lat}&lon=${data.coord.lon}&appid=${APIKey}`
         )
           .then((res) => res.json())
-          .then((data) => {
-            setPollutionAQI(data.list[0].main.aqi);
+          .then((pollutionData) => {
+            setPollutionAQI(pollutionData.list[0].main.aqi);
           });
 
         // fetch 5-day forecast
@@ -96,25 +133,41 @@ function App() {
           `http://api.openweathermap.org/data/2.5/forecast?lat=${data.coord.lat}&lon=${data.coord.lon}&units=imperial&appid=${APIKey}`
         )
           .then((res) => res.json())
-          .then((data) => {
-            const highs = [];
-            const lows = [];
-            let highest = 0;
-            let lowest = 0;
+          .then((forecastData) => {
+            //TODO don't include today's date in the 5-day forecast
+            let dates = [];
+            let uniqueDates = [];
+            let highest = [];
+            let lowest = [];
 
-            data.list.forEach((day) => {
-              // this is just for one hard-coded day, must next...
-              // check if days are the same date instead of hard-coding date
-              if (day.dt_txt.split(" ")[0] === "2022-07-04") {
-                highs.push(day.main.temp_max);
-                lows.push(day.main.temp_min);
+            dates = forecastData.list.map((day) => {
+              if (day.dt_txt.split(" ")[0] !== todayDate) {
+                return day.dt_txt.split(" ")[0];
               }
             });
-            highest = Math.round(highs.sort((a, b) => a - b)[0]);
-            lowest = Math.round(lows.sort((a, b) => b - a)[0]);
+            uniqueDates = [...new Set(dates)];
+            const weatherObjs = uniqueDates.map((date) => {
+              let w = new Weather();
+              w.date = date;
+              w.timeChunks = forecastData.list.filter((threeHours) => {
+                return w.date === threeHours.dt_txt.split(" ")[0];
+              });
+              return w;
+            });
+            weatherObjs.forEach((w) => {
+              w.highs = w.timeChunks.map((timeChunk) => {
+                // w.dayOfWeekName = getDaysOfWeek(timeChunk.dt);
+                return Math.round(timeChunk.main.temp_max);
+              });
+              highest.push(w.highs.sort((a, b) => b - a)[0]);
 
-            // console.log(highest);
-            // console.log(lowest);
+              w.lows = w.timeChunks.map((timeChunk) => {
+                return Math.round(timeChunk.main.temp_min);
+              });
+              lowest.push(w.lows.sort((a, b) => a - b)[0]);
+            });
+            setHighs(highest);
+            setLows(lowest);
           });
 
         // reverse geolocation to get full state and full country names
@@ -148,8 +201,9 @@ function App() {
   };
 
   const outputLocation = () => {
-    return cityName && countryName
-      ? cityName + ", " + stateName + ", " + countryName
+    const state = stateName ? stateName + ", " : "";
+    return dayName + " " + cityName && countryName
+      ? cityName + ", " + state + countryName
       : errorMsg;
   };
 
@@ -158,7 +212,9 @@ function App() {
       return (
         <>
           <div className="currentTemperature">
-            <div className="centered">
+            <div>
+              <div>{dayName}</div>
+
               <span className="bolded">
                 {weather}- {description}
               </span>
@@ -187,27 +243,41 @@ function App() {
     }
   };
 
-  const fiveDayForecast = () => {
-    return;
+  const highTemps = () => {
+    return highs.map((high) => {
+      //todo dropdown for F vs C
+      return (
+        <>
+          <div className="daysOfTheWeek">Monday</div>
+          <div className="dailyHigh">{high}&deg;F</div>
+        </>
+      );
+    });
+  };
+
+  const lowTemps = () => {
+    return lows.map((low) => {
+      return <div className="dailyLow">{low}&deg;F</div>;
+    });
   };
 
   return (
     <>
       <div className="weatherForm">
-        {/* <h1>how's the weather out there?</h1> */}
-        <h1>HOW'S THE WEATHER OUT THERE?</h1>
         <div className="formGroup">
           <form onSubmit={handleSubmit} className="getLocation">
             <label>
-              Enter a US ZIP code or city, state, and country name
+              <span className="beforeInput">how's the weather in </span>
               <input
                 value={location}
-                onChange={onChange}
+                onChange={onLocationChange}
                 type="text"
                 className="location"
                 name="location"
+                placeholder="Enter city or US zip code"
               />
             </label>
+            {showStateSelect()}
             <select
               onChange={onCountryChange}
               name="selectCountry"
@@ -221,7 +291,6 @@ function App() {
                 );
               })}
             </select>
-            {showStateSelect()}
             <input
               type="submit"
               className="submitLocation"
@@ -233,21 +302,23 @@ function App() {
       <div className="cityName">{outputLocation()}</div>
       <div className="weatherDetails">
         {displayCurrentWeather()}
-        {fiveDayForecast()}
+        <div className="fiveDayForecast">
+          <div className="highs">{highTemps()}</div>
+          <div className="lows">{lowTemps()}</div>
+        </div>
       </div>
     </>
   );
 }
 export default App;
-
 // create input field for zip, country/country ----
-// event.target.location.value ----
+// e.target.location.value ----
 // get lat and lon using geolocation API ----
 // dropdown of country codes ----
 // fetch endpoint with API key, and zip code/country passed in ----
 // currentWeather.main.temp rounded up to nearest whole number ----
 // fetch pollution endpoint using lat and lon ----
-// fetch 5 - day forecast using lat and lon
+// fetch 5 - day forecast using lat and lon ----
 // validate info they input
 // (dropdown for Celsius vs Fahrenheit)
 // fill out README
