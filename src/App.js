@@ -26,18 +26,18 @@ function App() {
   const [dailyLows, setDailyLows] = useState([]);
   const [dailyWeather, setDailyWeather] = useState([]);
   const [dailyIcons, setDailyIcons] = useState([]);
-  const [errorMsg, setErrorMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState(null);
   const [selectedState, setSelectedState] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
   // check if a US zip code was entered
   const regex = /^\d{5}(?:[-\s]\d{4})?$/;
   const queryParam = input.match(regex) ? "zip" : "city";
-  let currentWeather = "";
+  let currentWeatherUrl = "";
 
   const getDaysOfWeek = (unixTimestamp) => {
-    const dayOfWeek = new Date(dayjs.unix(unixTimestamp));
+    const date = new Date(dayjs.unix(unixTimestamp));
     const options = { weekday: "long" };
-    return new Intl.DateTimeFormat("en-US", options).format(dayOfWeek);
+    return new Intl.DateTimeFormat("en-US", options).format(date);
   };
 
   const pollutionMapping = {
@@ -72,18 +72,18 @@ function App() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const baseUrl = "https://api.openweathermap.org/data/2.5/weather?";
+    const baseUrl = "https://api.openweathermap.org/data/2.5/";
     const suffix = "&units=imperial&appid=7841aaead8245e0fde0256620686a3e1";
     const state = stateCode ? stateCode + "," : "";
 
     if (queryParam === "zip") {
-      currentWeather = `${baseUrl}zip=${input},${countryCode}${suffix}`;
+      currentWeatherUrl = `${baseUrl}weather?zip=${input},${countryCode}${suffix}`;
     } else {
-      currentWeather = `${baseUrl}q=${input},${state}${countryCode}${suffix}`;
+      currentWeatherUrl = `${baseUrl}weather?q=${input},${state}${countryCode}${suffix}`;
     }
 
     // fetch current weather
-    fetch(currentWeather)
+    fetch(currentWeatherUrl)
       .then((response) => {
         if (response.status !== 200) {
           //TODO BETTER ERROR MSGS, to check for more cases, like when no such zip
@@ -96,27 +96,23 @@ function App() {
           // todo doesn't work yet bec it still goes to the next .then()
           return;
         } else {
-          setErrorMsg("");
+          setErrorMsg(null);
         }
         //TODO const json = response.json(); instead of data
         return response.json();
       })
-
       .then((data) => {
-        // setLat(data.coord.lat);
-        // setLon(data.coord.lon);
         setCityName(data.name);
         setCurrentTemp(Math.round(data.main.temp));
         setHumidity(data.main.humidity);
         setWind(Math.round(data.wind.speed));
         setFeelsLike(Math.round(data.main.feels_like));
-        setWeather(data.weather[0].main);
-        setDescription(data.weather[0].description);
+        setWeather(data.weather[0].description);
 
         // fetchAirPollution();
         fetch(
           // todo split into variables so not repeating same baseUrl
-          `http://api.openweathermap.org/data/2.5/air_pollution?lat=${data.coord.lat}&lon=${data.coord.lon}&appid=${APIKey}`
+          `${baseUrl}/air_pollution?lat=${data.coord.lat}&lon=${data.coord.lon}&appid=${APIKey}`
         )
           .then((res) => res.json())
           .then((pollutionData) => {
@@ -124,8 +120,9 @@ function App() {
           });
 
         // fetch 5-day forecast
+        // TODO make this more React-y instead of using JS classes
         fetch(
-          `http://api.openweathermap.org/data/2.5/forecast?lat=${data.coord.lat}&lon=${data.coord.lon}&units=imperial&appid=${APIKey}`
+          `${baseUrl}/forecast?lat=${data.coord.lat}&lon=${data.coord.lon}&units=imperial&appid=${APIKey}`
         )
           .then((res) => res.json())
           .then((forecastData) => {
@@ -134,10 +131,14 @@ function App() {
             let lowest = {};
 
             let dates = forecastData.list.filter(
-              (day) => day.dt_txt.split(" ")[0] !== todayDate
+              //TODO explain why used dayjs over vanilla
+              // (day) => day.dt_txt.split(" ")[0] !== todayDate
+              (day) => dayjs(day.dt_txt).format("YYYY-MM-DD") !== todayDate
             );
+
             dates = dates.map((date) => date.dt_txt.split(" ")[0]);
             uniqueDates = [...new Set(dates)];
+
             const weatherObjs = uniqueDates.map((date) => {
               let w = new Weather();
               w.date = date;
@@ -161,20 +162,19 @@ function App() {
               lowest[w.dayOfWeek] = w.lows.sort((a, b) => a - b)[0];
               setDailyLows(lowest);
 
-              w.weather = w.timeChunks.map((timeChunk) => {
-                return timeChunk.weather[0].main;
-              });
-
-              w.icons = w.timeChunks.map((timeChunk) => {
-                console.log(timeChunk);
-                return timeChunk.weather[0].icon;
-              });
+              w.weatherDescription = w.timeChunks[0].weather[0].description;
+              w.icons = w.timeChunks[0].weather[0].icon;
             });
 
-            weatherObjs.map((obj) => {
-              setDailyIcons(obj.icons);
-              setDailyWeather(obj.weather);
+            const icons = weatherObjs.map((obj) => {
+              return obj.icons;
             });
+            setDailyIcons(icons);
+
+            const descriptions = weatherObjs.map((obj) => {
+              return obj.description;
+            });
+            setDailyWeather(descriptions);
           });
 
         // reverse geolocation to get full state and full country names
@@ -209,9 +209,8 @@ function App() {
 
   const outputLocation = () => {
     const state = stateName ? stateName + ", " : "";
-    return dayName + " " + cityName && countryName
-      ? cityName + ", " + state + countryName
-      : errorMsg;
+    const country = countryName ? countryName + ", " : "";
+    return errorMsg ? errorMsg : cityName + " " + state + country;
   };
 
   const displayCurrentWeather = () => {
@@ -224,10 +223,7 @@ function App() {
 
               <span className="bolded weather">{weather}</span>
             </div>
-            <div className="currentTemp">
-              {/* <span className="bolded">Current Temperature:</span>  */}
-              {currentTemp}&deg;F
-            </div>
+            <div className="currentTemp">{currentTemp}&deg;F</div>
             <div>
               <span className="bolded">RealFeel Temperature:</span> {feelsLike}
               &deg;F
@@ -262,10 +258,10 @@ function App() {
   const highTemps = () => {
     let output = [];
 
-    for (let day in dailyHighs) {
+    for (let high in dailyHighs) {
       output.push(
         <>
-          <div className="dailyHigh">{dailyHighs[day]}&deg;F</div>
+          <div className="dailyHigh">{dailyHighs[high]}&deg;F</div>
         </>
       );
     }
@@ -274,10 +270,10 @@ function App() {
 
   const lowTemps = () => {
     let output = [];
-    for (let day in dailyLows) {
+    for (let low in dailyLows) {
       output.push(
         <>
-          <div className="dailyLow">{dailyLows[day]}&deg;F</div>
+          <div className="dailyLow">{dailyLows[low]}&deg;F</div>
         </>
       );
     }
@@ -298,13 +294,12 @@ function App() {
 
   const icons = () => {
     let output = [];
-    for (let day in dailyIcons) {
+
+    for (let icon of dailyIcons) {
       output.push(
         <>
           <div className="dailyIcon">
-            <img
-              src={`http://openweathermap.org/img/wn/${dailyIcons[day]}@2x.png`}
-            />
+            <img src={`http://openweathermap.org/img/wn/${icon}@2x.png`} />
           </div>
         </>
       );
@@ -342,10 +337,13 @@ function App() {
                 );
               })}
             </select>
+            <input type="submit" className="submitLocation" value=" " />
             <input
-              type="submit"
-              className="submitLocation"
-              value="Get Results"
+              className="searchIcon"
+              type="image"
+              src="white-search-icon.png"
+              border="0"
+              alt="Submit"
             />
           </form>
         </div>
@@ -386,10 +384,12 @@ export default App;
 //    RESPONSIVE!!
 //    Icons/weather symbols
 //    center days of week above temperatures ----
-//    fix where submit button is placed
+//    fix where submit button is placed - magnifying glass?
 //    center the 5 days forecast in the middle of the page ----
 //    change background image for nighttime or different weather
 // some cities return the wrong results. for example, flushing and forest hills and blank location
 // still shows results even when you have the wrong city/country combination
 // shows today + 4 days ahead instead of starting tomorrow ----
-// create error messages for failed API calls that come after successful ones (right now it just leaves the previous result on the page with no error message)
+// create error messages for failed API calls that come after successful ones (right now it just leaves the previous result on the page with no error message) ----
+// BUG there are 2 Fridays so the last day doesn't show temperatures
+// remove weather when an error msg comes up
