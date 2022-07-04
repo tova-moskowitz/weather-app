@@ -27,8 +27,7 @@ function App() {
   const [dailyWeather, setDailyWeather] = useState([]);
   const [dailyIcons, setDailyIcons] = useState([]);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [selectedState, setSelectedState] = useState("");
-  const [selectedCountry, setSelectedCountry] = useState("");
+  const [statusCode, setStatusCode] = useState(null);
   // check if a US zip code was entered
   const regex = /^\d{5}(?:[-\s]\d{4})?$/;
   const queryParam = input.match(regex) ? "zip" : "city";
@@ -56,14 +55,10 @@ function App() {
     // if a state was selected and then country other than US is selected, reset dropdown to empty so that it doesn't pass the prev stateName value
     let stateCode = countryCode === "US" ? e.target.value : "";
     setStateCode(stateCode);
-    //todo
-    // // setSelectedState(e.target.selectedOptions[0].innerHTML);
-    // setSelectedState(e.target.value);
   };
 
   const onCountryChange = (e) => {
     setCountryCode(e.target.value);
-    setSelectedCountry(e.target.value);
   };
 
   //todo
@@ -85,8 +80,9 @@ function App() {
     // fetch current weather
     fetch(currentWeatherUrl)
       .then((response) => {
+        setStatusCode(response.status);
         if (response.status !== 200) {
-          //TODO BETTER ERROR MSGS, to check for more cases, like when no such zip
+          setStatusCode(response.status);
           setErrorMsg(
             <div className="errorMsg">
               Please enter a valid US ZIP code or city, state country code
@@ -94,7 +90,7 @@ function App() {
             </div>
           );
           // todo doesn't work yet bec it still goes to the next .then()
-          return;
+          return "";
         } else {
           setErrorMsg(null);
         }
@@ -111,7 +107,6 @@ function App() {
 
         // fetchAirPollution();
         fetch(
-          // todo split into variables so not repeating same baseUrl
           `${baseUrl}/air_pollution?lat=${data.coord.lat}&lon=${data.coord.lon}&appid=${APIKey}`
         )
           .then((res) => res.json())
@@ -244,7 +239,6 @@ function App() {
     } else {
       return (
         <div className="onloadMsg">
-          <p>HOW'S THE WEATHER OUT THERE?</p>
           <img
             className="sunImg"
             src={require("./sun-png-transparent-19.png")}
@@ -351,12 +345,14 @@ function App() {
       <div className="cityName">{outputLocation()}</div>
       <div className="weatherDetails">
         {displayCurrentWeather()}
-        <div className="fiveDayForecast">
-          <div className="daysOfTheWeek">{daysOfTheWeek()}</div>
-          <div className="highs">{highTemps()}</div>
-          <div className="icons">{icons()}</div>
-          <div className="lows">{lowTemps()}</div>
-        </div>
+        {statusCode === 200 && (
+          <div className="fiveDayForecast">
+            <div className="daysOfTheWeek">{daysOfTheWeek()}</div>
+            <div className="highs">{highTemps()}</div>
+            <div className="icons">{icons()}</div>
+            <div className="lows">{lowTemps()}</div>
+          </div>
+        )}
       </div>
     </>
   );
