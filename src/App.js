@@ -16,8 +16,6 @@ function App() {
   const [currentTemp, setCurrentTemp] = useState();
   const [todayDate, setTodayDate] = useState(dayjs().format("YYYY-MM-DD"));
   const [dayName, setDayName] = useState();
-  // const [lat, setLat] = useState(null);
-  // const [lon, setLon] = useState(null);
   const [humidity, setHumidity] = useState(null);
   const [wind, setWind] = useState(null);
   const [feelsLike, setFeelsLike] = useState(null);
@@ -168,6 +166,7 @@ function App() {
               });
 
               w.icons = w.timeChunks.map((timeChunk) => {
+                console.log(timeChunk);
                 return timeChunk.weather[0].icon;
               });
             });
@@ -223,17 +222,15 @@ function App() {
             <div>
               <div>{dayName}</div>
 
-              <span className="bolded">
-                {weather}- {description}
-              </span>
+              <span className="bolded weather">{weather}</span>
             </div>
-            <div>
-              <span className="bolded">Current Temperature:</span> {currentTemp}
-              &deg;
+            <div className="currentTemp">
+              {/* <span className="bolded">Current Temperature:</span>  */}
+              {currentTemp}&deg;F
             </div>
             <div>
               <span className="bolded">RealFeel Temperature:</span> {feelsLike}
-              &deg;
+              &deg;F
             </div>
             <div>
               <span className="bolded">Humidity:</span> {humidity}%
@@ -247,6 +244,17 @@ function App() {
             </div>
           </div>
         </>
+      );
+    } else {
+      return (
+        <div className="onloadMsg">
+          <p>HOW'S THE WEATHER OUT THERE?</p>
+          <img
+            className="sunImg"
+            src={require("./sun-png-transparent-19.png")}
+            alt="sun icon"
+          />
+        </div>
       );
     }
   };
@@ -287,6 +295,23 @@ function App() {
     }
     return output;
   };
+
+  const icons = () => {
+    let output = [];
+    for (let day in dailyIcons) {
+      output.push(
+        <>
+          <div className="dailyIcon">
+            <img
+              src={`http://openweathermap.org/img/wn/${dailyIcons[day]}@2x.png`}
+            />
+          </div>
+        </>
+      );
+    }
+    return output;
+  };
+
   return (
     <>
       <div className="weatherForm">
@@ -331,6 +356,7 @@ function App() {
         <div className="fiveDayForecast">
           <div className="daysOfTheWeek">{daysOfTheWeek()}</div>
           <div className="highs">{highTemps()}</div>
+          <div className="icons">{icons()}</div>
           <div className="lows">{lowTemps()}</div>
         </div>
       </div>
