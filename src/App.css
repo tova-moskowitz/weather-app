@@ -22,10 +22,10 @@ html {
 
 .beforeInput {
   margin-left: 40px;
-  font-size: 1.5rem;
+  font-size: 18px;
   /* color: #ffa500; */
   color: #fff;
-  font-weight: 700;
+  /* font-weight: 700; */
 }
 
 ::placeholder {
@@ -84,21 +84,12 @@ html {
   text-align: center;
   height: 300px;
   width: 300px;
+  margin: 5%;
 }
 
 .submitLocation {
   background: none;
   width: 29%;
-  /* margin: 2px auto; */
-
-  /* height: 50px; 
-  position: absolute;
-  right: -50px;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-family: "Didact Gothic";
-  font-size: 15px;
-  color: #ffdf00; */
 }
 
 .locationName {
@@ -212,4 +203,45 @@ select {
 }
 .dailyIcon {
   height: 100px;
+}
+
+@media screen and (max-width: 640px) {
+  .beforeInput {
+    margin-left: 15px;
+  }
+  .location {
+    width: 50%;
+    margin-left: 15px;
+  }
+  .selectCountry,
+  .selectState {
+    width: 50%;
+    margin: 0 40px;
+  }
+  .weatherForm {
+    text-align: center;
+  }
+  .searchIcon {
+    position: absolute;
+    top: 10px;
+    right: 0px;
+  }
+}
+/* 
+.selectCountry,
+.selectState {
+  width: 25%;
+  margin: 0 0px;
+} */
+
+@media only screen and (min-width: 425px) and (max-width: 768px) {
+  .searchIcon {
+    top: 7px;
+    right: -6px;
+  }
+  .selectCountry,
+  .selectState {
+    width: 50%;
+    margin: 0 45px;
+  }
 }
