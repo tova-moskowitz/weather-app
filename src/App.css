@@ -244,4 +244,22 @@ select {
     width: 50%;
     margin: 0 45px;
   }
+  .cityName {
+    margin-top: -33px;
+    margin-bottom: 100px;
+  }
+}
+
+@media only screen and (min-width: 375px) {
+  .cityName {
+    margin-top: -33px;
+    margin-bottom: 100px;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .cityName {
+    margin-top: 35px;
+    margin-bottom: 10px;
+  }
 }
