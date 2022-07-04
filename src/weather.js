@@ -1,8 +1,8 @@
 class Weather {
   date;
   dayOfWeek;
-  weather;
-  icon;
+  weatherDescription = [];
+  icons = [];
   timeChunks = [];
   highs = [];
   lows = [];
