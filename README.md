@@ -1,3 +1,17 @@
+## Developer notes:
+
+For 5-day forecast, I made the assumption that we only wanted to show one weather value for each day, so I pulled the highest and lowest temps for each of the 8 hour time blocks and output those
+
+I also made the assumption that 5-day forecast does not include the current day
+
+Accounting for time zones is a larger endeavor so I chose not to address it here at this point
+
+Why I chose dayjs... actually, why I didn't use dayjs... I am after all
+
+There are certain locations where, when I enter a certain combination of city and state, it comes up with the wrong location. For example, Flushing, in the state of NY in US, the results come back as Flushing, England GB. I looked into it and it might be an issue with the API itself
+
+I have plans to create a dropdown for users to choose between Celsius and Fahrenheit
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
