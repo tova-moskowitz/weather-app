@@ -3,7 +3,10 @@
 
 html {
   width: 100%;
-  background-image: url("../public/wai-hsuen-weixian-chan-DnmMLipPktY-unsplash.jpg");
+  font-family: "Didact Gothic";
+
+  /* background-image: url("../public/wai-hsuen-weixian-chan-DnmMLipPktY-unsplash.jpg"); */
+  background: #008ecc;
   height: 100%;
   background-size: cover;
   background-repeat: no-repeat;
@@ -18,55 +21,84 @@ html {
 }
 
 .beforeInput {
-  margin-left: 18px;
+  margin-left: 40px;
   font-size: 1.5rem;
+  /* color: #ffa500; */
+  color: #fff;
+  font-weight: 700;
 }
 
 ::placeholder {
   font-style: italic;
-  font-size: 0.75em;
-  color: gray;
-  padding: 5px;
+  font-size: 0.5em;
+  color: ivory;
+  /* padding: 5px; */
 }
 
 .selectCountry,
 .selectState {
+  font-family: "Didact Gothic";
   background: none;
   height: 50px;
   width: 20%;
   font-size: 18px;
   margin-top: 2px;
   text-align: center;
+  color: #fff;
+  /* color: #fff; */
 }
 
 .location,
 .cityName {
+  font-family: "Didact Gothic";
   text-align: center;
-  border-bottom: 2px black solid;
+  border-bottom: 1px ivory solid;
   background: none;
-  height: 50px;
+  height: 29px;
   width: 20%;
   margin-left: 20px;
   font-size: 25px;
+  border-radius: 8px;
 }
 
 .cityName {
+  font-family: "Didact Gothic";
   border: none;
   width: 100%;
   margin-top: 20px;
+  font-size: 35px;
+  font-weight: bold;
+  height: 35px;
+  color: #fff;
+}
+
+.onloadMsg {
+  text-align: center;
+  color: #fff;
+  font-size: 45px;
+  font-weight: 700;
+  font-family: "Didact Gothic";
+}
+
+.sunImg {
+  text-align: center;
+  height: 300px;
+  width: 300px;
 }
 
 .submitLocation {
-  width: 29%;
-  margin: 2px auto;
   background: none;
-  height: 50px;
+  width: 29%;
+  /* margin: 2px auto; */
+
+  /* height: 50px; 
   position: absolute;
   right: -50px;
   text-transform: uppercase;
   font-weight: 700;
   font-family: "Didact Gothic";
   font-size: 15px;
+  color: #ffdf00; */
 }
 
 .locationName {
@@ -75,77 +107,109 @@ html {
   font-size: 30px;
 }
 
+.searchIcon {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 20px;
+  right: 80px;
+}
+
 .weatherDetails {
+  font-family: "Didact Gothic";
   display: flex;
   flex-direction: column;
   text-align: center;
+  color: white;
 }
 
 .currentTemperature {
+  font-family: "Didact Gothic";
+  color: #fff;
   width: 100%;
-  font-size: 14px;
-  line-height: 2;
+  font-size: 20px;
   padding: 10px;
   border-radius: 20px;
   margin-bottom: 20px;
 }
 
-label {
-  font-size: 17px;
-  width: 29%;
+.weather {
+  font-size: 30px;
+}
+
+.currentTemp {
+  font-size: 40px;
+  height: 60px;
 }
 
 input,
 select {
+  font-family: "Didact Gothic";
   width: 29%;
   padding: 0;
   border: none;
   display: inline-block;
   vertical-align: middle;
+  color: #fff;
 }
 
 .bolded {
   font-weight: 700;
+  color: #fff;
 }
 
-.centered {
+/* .centered {
   text-align: center;
   border: 1px black solid;
   width: 100%;
+  font-family: "Didact Gothic";
   border-radius: 5px;
-}
+} */
 
 .errorMsg {
+  font-family: "Didact Gothic";
   font-size: 14px;
-  color: red;
+  color: #ffdf00;
   text-align: center;
 }
 
 .fiveDayForecast {
+  font-family: "Didact Gothic";
   display: flex;
-  width: 45%;
+  width: 100%;
   flex-direction: column;
+  /* background: #ffdf00; */
+  background: #fff;
+  border-radius: 10px;
 }
 
 .highs,
 .lows,
-.daysOfTheWeek {
+.daysOfTheWeek,
+.icons {
+  color: black;
   display: flex;
   flex-direction: row;
+  font-family: "Didact Gothic";
 }
 
 .dailyHigh,
 .dailyLow,
-.dayOfTheWeek {
-  flex: 0 0 45%;
+.dayOfTheWeek,
+.dailyIcon {
+  flex: 0 0 20%;
   font-size: 30px;
-  font-weight: bold;
-  line-height: 6rem;
+  /* font-weight: bold; */
   text-align: center;
-  height: 100px;
+  height: 50px;
+  font-family: "Didact Gothic";
 }
 
 .dayOfTheWeek {
   font-size: 14px;
   height: 35px;
+  font-weight: 700;
+}
+.dailyIcon {
+  height: 100px;
 }
