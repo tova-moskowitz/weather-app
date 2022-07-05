@@ -136,7 +136,7 @@ select {
   border: none;
   display: inline-block;
   vertical-align: middle;
-  color: white;
+  color: #000;
 }
 
 .bolded {
