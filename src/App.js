@@ -293,7 +293,7 @@ function App() {
       output.push(
         <>
           <div className="dailyIcon">
-            <img src={`http://openweathermap.org/img/wn/${icon}@2x.png`} />
+            <img src={`https://openweathermap.org/img/wn/${icon}@2x.png`} />
           </div>
         </>
       );
