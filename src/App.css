@@ -155,11 +155,10 @@ select {
 .fiveDayForecast {
   font-family: "Didact Gothic";
   display: flex;
-  width: 97%;
+  width: 100%;
   flex-direction: column;
   background: #e1c16e;
   border-radius: 10px;
-  align-self: center;
   border: 5px #fff solid;
 }
 
