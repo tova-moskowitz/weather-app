@@ -10,4 +10,4 @@ I have plans to create a dropdown for users to choose between Celsius and Fahren
 
 I would like to break out the submitHandler into separate functions so that each API call is its own function
 
-There's potential for moving some of the code into separate files to make App.js neater and more streamlined
+The next step would be to separate the code into components for each day to make App.js neater and more streamlined
