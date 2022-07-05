@@ -141,17 +141,18 @@ function App() {
               });
               w.dayOfWeek = getDayOfWeek(w.timeChunks[0].dt);
               highest[w.dayOfWeek] = w.highs.sort((a, b) => b - a)[0];
-              setDailyHighs(highest);
 
               w.lows = w.timeChunks.map((timeChunk) => {
                 return Math.round(timeChunk.main.temp_min);
               });
               lowest[w.dayOfWeek] = w.lows.sort((a, b) => a - b)[0];
-              setDailyLows(lowest);
 
               w.weatherDescription = w.timeChunks[0].weather[0].description;
               w.icons = w.timeChunks[0].weather[0].icon;
             });
+
+            setDailyHighs(highest);
+            setDailyLows(lowest);
 
             const icons = weatherObjs.map((obj) => {
               return obj.icons;
