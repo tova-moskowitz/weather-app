@@ -197,7 +197,7 @@ function App() {
 
   const outputLocation = () => {
     const state = stateName ? stateName + ", " : "";
-    const country = countryName ? countryName + ", " : "";
+    const country = countryName ? countryName : "";
     return errorMsg ? errorMsg : cityName + " " + state + country;
   };
 
@@ -212,7 +212,7 @@ function App() {
             </div>
             <div className="currentTemp">{currentTemp}&deg;F</div>
             <div>
-              <span className="bolded">RealFeel Temperature:</span> {feelsLike}
+              <span className="bolded">Feels Like</span> {feelsLike}
               &deg;F
             </div>
             <div>

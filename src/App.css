@@ -20,7 +20,7 @@ html {
 .beforeInput {
   margin-left: 40px;
   font-size: 18px;
-  color: #fff;
+  color: #e1c16e;
 }
 
 ::placeholder {
@@ -145,7 +145,7 @@ select {
 .errorMsg {
   font-family: "Didact Gothic";
   font-size: 14px;
-  color: #ffdf00;
+  color: #e1c16e;
   text-align: center;
 }
 
@@ -154,7 +154,7 @@ select {
   display: flex;
   width: 100%;
   flex-direction: column;
-  background: #fff;
+  background: #e1c16e;
   border-radius: 10px;
 }
 
