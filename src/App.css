@@ -17,6 +17,7 @@ html {
   font-family: "Didact Gothic";
   background: #fff;
   height: 50px;
+  border-bottom: 3px #e1c16e solid;
 }
 
 .beforeInput {
