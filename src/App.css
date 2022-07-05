@@ -147,9 +147,10 @@ select {
 
 .errorMsg {
   font-family: "Didact Gothic";
-  font-size: 14px;
+  font-size: 18px;
   color: #e1c16e;
   text-align: center;
+  margin-top: 100px;
 }
 
 .fiveDayForecast {
