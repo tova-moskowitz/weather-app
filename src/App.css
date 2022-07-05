@@ -227,11 +227,13 @@ select {
   .location {
     margin: -9px 0 0 5px;
     width: 100%;
+    text-align: center;
   }
 
   .selectCountry,
   .selectState {
     width: 100%;
+    text-align: center;
   }
   .cityName {
     margin-top: 45px;
