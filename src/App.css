@@ -44,8 +44,6 @@ html {
   font-size: 18px;
   margin-top: 2px;
   text-align: center;
-  color: #fff;
-  /* color: #fff; */
 }
 
 .location,
@@ -149,14 +147,6 @@ select {
   color: #fff;
 }
 
-/* .centered {
-  text-align: center;
-  border: 1px black solid;
-  width: 100%;
-  font-family: "Didact Gothic";
-  border-radius: 5px;
-} */
-
 .errorMsg {
   font-family: "Didact Gothic";
   font-size: 14px;
@@ -169,7 +159,6 @@ select {
   display: flex;
   width: 100%;
   flex-direction: column;
-  /* background: #ffdf00; */
   background: #fff;
   border-radius: 10px;
 }
@@ -190,7 +179,6 @@ select {
 .dailyIcon {
   flex: 0 0 20%;
   font-size: 30px;
-  /* font-weight: bold; */
   text-align: center;
   height: 50px;
   font-family: "Didact Gothic";
@@ -227,12 +215,6 @@ select {
     right: 0px;
   }
 }
-/* 
-.selectCountry,
-.selectState {
-  width: 25%;
-  margin: 0 0px;
-} */
 
 @media only screen and (min-width: 425px) and (max-width: 768px) {
   .searchIcon {
