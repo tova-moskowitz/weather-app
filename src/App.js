@@ -85,7 +85,7 @@ function App() {
           setStatusCode(response.status);
           setErrorMsg(
             <div className="errorMsg">
-              Please enter a valid US ZIP code or city, state country code
+              Please enter a valid US ZIP code or city, state, country
               combination
             </div>
           );
