@@ -78,10 +78,11 @@ html {
 }
 
 .sunImg {
-  text-align: center;
+  margin-top: -30px;
+  /* text-align: center; */
   height: 300px;
   width: 300px;
-  margin: 5%;
+  /* margin: 8%; */
 }
 
 .submitLocation {
@@ -151,7 +152,7 @@ select {
   font-size: 18px;
   color: #e1c16e;
   text-align: center;
-  margin-top: 100px;
+  margin-top: 0px;
 }
 
 .fiveDayForecast {
@@ -194,55 +195,79 @@ select {
   height: 100px;
 }
 
-@media screen and (max-width: 640px) {
-  .beforeInput {
-    margin-left: 15px;
-  }
-  .location {
-    width: 50%;
-    margin-left: 15px;
-  }
-  .selectCountry,
-  .selectState {
-    width: 50%;
-    margin: 0 40px;
-  }
-  .weatherForm {
-    text-align: center;
-  }
-  .searchIcon {
-    position: absolute;
-    top: 10px;
-    right: 0px;
-  }
-}
-
-@media only screen and (min-width: 425px) and (max-width: 768px) {
-  .searchIcon {
-    top: 7px;
-    right: -6px;
-  }
-  .selectCountry,
-  .selectState {
-    width: 50%;
-    margin: 0 45px;
-  }
+/* Responsive */
+@media only screen and (min-width: 320px) and (max-width: 768px) {
   .cityName {
-    margin-top: -33px;
+    margin-top: 50px;
     margin-bottom: 100px;
   }
-}
 
-@media only screen and (min-width: 375px) {
+  .beforeInput {
+    width: 100%;
+    margin: 27%;
+  }
+
+  .sunImg {
+    margin: -75px;
+  }
+
+  .weatherForm {
+    height: 160px;
+  }
+
+  .searchIcon {
+    top: 10px;
+    right: 10px;
+  }
+
+  .errorMsg {
+    margin-top: -30px;
+  }
+
+  .location {
+    margin: -9px 0 0 5px;
+    width: 100%;
+  }
+
+  .selectCountry,
+  .selectState {
+    width: 100%;
+  }
   .cityName {
-    margin-top: -33px;
+    margin-top: 45px;
     margin-bottom: 100px;
   }
 }
 
 @media only screen and (min-width: 768px) {
+  .selectState,
+  .selectCountry {
+    width: 20%;
+    margin: 0;
+  }
+
+  ::placeholder {
+    font-size: 18px;
+  }
+
+  .location {
+    width: 30%;
+  }
+
   .cityName {
     margin-top: 35px;
     margin-bottom: 10px;
+  }
+
+  .sunImg {
+    margin-top: 20px;
+  }
+
+  .weatherForm {
+    height: 50px;
+  }
+
+  .beforeInput {
+    margin: 20px 0 0 10px;
   }
 }
