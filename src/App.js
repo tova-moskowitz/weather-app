@@ -331,7 +331,7 @@ function App() {
             <input
               className="searchIcon"
               type="image"
-              src="white-search-icon.png"
+              src="search.png"
               border="0"
               alt="Submit"
             />

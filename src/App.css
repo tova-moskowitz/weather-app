@@ -15,18 +15,20 @@ html {
   width: 100%;
   background: none;
   font-family: "Didact Gothic";
+  background: #fff;
 }
 
 .beforeInput {
   margin-left: 40px;
   font-size: 18px;
   color: #e1c16e;
+  font-weight: 700;
 }
 
 ::placeholder {
   font-style: italic;
   font-size: 0.5em;
-  color: ivory;
+  color: black;
 }
 
 .selectCountry,
