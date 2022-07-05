@@ -174,7 +174,7 @@ function App() {
 
         // reverse geolocation to get full state and full country names
         fetch(
-          `http://api.openweathermap.org/geo/1.0/reverse?lat=${data.coord.lat}&lon=${data.coord.lon}&appid=${APIKey}`
+          `https://api.openweathermap.org/geo/1.0/reverse?lat=${data.coord.lat}&lon=${data.coord.lon}&appid=${APIKey}`
         )
           .then((res) => res.json())
           .then((data) => {
