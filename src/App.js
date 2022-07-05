@@ -61,9 +61,6 @@ function App() {
     setCountryCode(e.target.value);
   };
 
-  //todo
-  // const fetchCurrentWeather = () => {};
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -89,12 +86,10 @@ function App() {
               combination
             </div>
           );
-          // todo doesn't work yet bec it still goes to the next .then()
           return "";
         } else {
           setErrorMsg(null);
         }
-        //TODO const json = response.json(); instead of data
         return response.json();
       })
       .then((data) => {
@@ -115,7 +110,6 @@ function App() {
           });
 
         // fetch 5-day forecast
-        // TODO make this more React-y instead of using JS classes
         fetch(
           `${baseUrl}/forecast?lat=${data.coord.lat}&lon=${data.coord.lon}&units=imperial&appid=${APIKey}`
         )
@@ -126,8 +120,6 @@ function App() {
             let lowest = {};
 
             let dates = forecastData.list.filter(
-              //TODO explain why used dayjs over vanilla
-              // (day) => day.dt_txt.split(" ")[0] !== todayDate
               (day) => dayjs(day.dt_txt).format("YYYY-MM-DD") !== todayDate
             );
 
@@ -209,7 +201,7 @@ function App() {
   };
 
   const displayCurrentWeather = () => {
-    if (currentTemp && cityName && countryName) {
+    if (statusCode === 200) {
       return (
         <>
           <div className="currentTemperature">
@@ -233,6 +225,12 @@ function App() {
               <span className="bolded">Air Quality Rating:</span>{" "}
               {pollutionMapping[pollutionAQI]}
             </div>
+          </div>
+          <div className="fiveDayForecast">
+            <div className="daysOfTheWeek">{daysOfTheWeek()}</div>
+            <div className="highs">{highTemps()}</div>
+            <div className="icons">{icons()}</div>
+            <div className="lows">{lowTemps()}</div>
           </div>
         </>
       );
@@ -343,49 +341,8 @@ function App() {
         </div>
       </div>
       <div className="cityName">{outputLocation()}</div>
-      <div className="weatherDetails">
-        {displayCurrentWeather()}
-        {statusCode === 200 && (
-          <div className="fiveDayForecast">
-            <div className="daysOfTheWeek">{daysOfTheWeek()}</div>
-            <div className="highs">{highTemps()}</div>
-            <div className="icons">{icons()}</div>
-            <div className="lows">{lowTemps()}</div>
-          </div>
-        )}
-      </div>
+      <div className="weatherDetails">{displayCurrentWeather()}</div>
     </>
   );
 }
 export default App;
-// create input field for zip, country/country ----
-// e.target.location.value ----
-// get lat and lon using geolocation API ----
-// dropdown of country codes ----
-// fetch endpoint with API key, and zip code/country passed in ----
-// currentWeather.main.temp rounded up to nearest whole number ----
-// fetch pollution endpoint using lat and lon ----
-// fetch 5 - day forecast using lat and lon ----
-// validate info they input
-// (dropdown for Celsius vs Fahrenheit)
-// fill out README
-// use either zip or q in api call ----
-// get country code from entry ----
-// (night sky after sundown- background and font color)
-// error handling ----
-// Change background image for cloudy/rain/snow/clear/nighttime
-// show state dropdown when it's not a zip ----
-// the commas ----
-// styling:
-//    RESPONSIVE!!
-//    Icons/weather symbols
-//    center days of week above temperatures ----
-//    fix where submit button is placed - magnifying glass?
-//    center the 5 days forecast in the middle of the page ----
-//    change background image for nighttime or different weather
-// some cities return the wrong results. for example, flushing and forest hills and blank location
-// still shows results even when you have the wrong city/country combination
-// shows today + 4 days ahead instead of starting tomorrow ----
-// create error messages for failed API calls that come after successful ones (right now it just leaves the previous result on the page with no error message) ----
-// BUG there are 2 Fridays so the last day doesn't show temperatures
-// remove weather when an error msg comes up
