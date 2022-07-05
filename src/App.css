@@ -16,6 +16,7 @@ html {
   background: none;
   font-family: "Didact Gothic";
   background: #fff;
+  height: 50px;
 }
 
 .beforeInput {
@@ -154,10 +155,12 @@ select {
 .fiveDayForecast {
   font-family: "Didact Gothic";
   display: flex;
-  width: 100%;
+  width: 97%;
   flex-direction: column;
   background: #e1c16e;
   border-radius: 10px;
+  align-self: center;
+  border: 5px #fff solid;
 }
 
 .highs,
