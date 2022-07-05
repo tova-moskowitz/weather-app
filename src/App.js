@@ -33,7 +33,7 @@ function App() {
   const queryParam = input.match(regex) ? "zip" : "city";
   let currentWeatherUrl = "";
 
-  const getDaysOfWeek = (unixTimestamp) => {
+  const getDayOfWeek = (unixTimestamp) => {
     const date = new Date(dayjs.unix(unixTimestamp));
     const options = { weekday: "long" };
     return new Intl.DateTimeFormat("en-US", options).format(date);
@@ -137,9 +137,9 @@ function App() {
 
             weatherObjs.forEach((w) => {
               w.highs = w.timeChunks.map((timeChunk) => {
-                w.dayOfWeek = getDaysOfWeek(timeChunk.dt);
                 return Math.round(timeChunk.main.temp_max);
               });
+              w.dayOfWeek = getDayOfWeek(w.timeChunks[0].dt);
               highest[w.dayOfWeek] = w.highs.sort((a, b) => b - a)[0];
               setDailyHighs(highest);
 
@@ -207,7 +207,6 @@ function App() {
           <div className="currentTemperature">
             <div>
               <div>{dayName}</div>
-
               <span className="bolded weather">{weather}</span>
             </div>
             <div className="currentTemp">{currentTemp}&deg;F</div>
@@ -249,7 +248,6 @@ function App() {
 
   const highTemps = () => {
     let output = [];
-
     for (let high in dailyHighs) {
       output.push(
         <>
@@ -286,7 +284,6 @@ function App() {
 
   const icons = () => {
     let output = [];
-
     for (let icon of dailyIcons) {
       output.push(
         <>
