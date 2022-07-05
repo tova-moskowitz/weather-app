@@ -234,10 +234,12 @@ select {
   .selectState {
     width: 100%;
     text-align: center;
+    margin-left: 25%;
   }
+
   .cityName {
     margin-top: 45px;
-    margin-bottom: 100px;
+    margin-bottom: 65px;
   }
 }
 
